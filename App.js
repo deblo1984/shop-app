@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, LogBox } from "react-native";
 import { createStore, combineReducers } from "redux";
 import { Provider } from "react-redux";
 
@@ -16,6 +16,7 @@ const rootReducer = combineReducers({
 const store = createStore(rootReducer);
 
 export default function App() {
+  LogBox.ignoreAllLogs();
   return (
     <Provider store={store}>
       <AppNavigator />

@@ -1,8 +1,10 @@
 import React, { useLayoutEffect } from "react";
-import { FlatList, Platform } from "react-native";
+import { FlatList, Platform, Button } from "react-native";
 import { DrawerActions } from "@react-navigation/native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { useSelector, useDispatch } from "react-redux";
+
+import Colors from "../../constants/Colors";
 import ProductItem from "../../components/shop/ProductItem";
 import * as cartActions from "../../store/actions/cart";
 import CustomHeaderButton from "../../components/ui/CustomHeaderButton";
@@ -10,6 +12,13 @@ import CustomHeaderButton from "../../components/ui/CustomHeaderButton";
 const ProductsOverviewScreen = (props) => {
   const products = useSelector((state) => state.products.availableProducts);
   const dispatch = useDispatch();
+
+  const selectItemHandler = (id, title) => {
+    props.navigation.navigate("ProductDetail", {
+      productId: id,
+      productTitle: title,
+    });
+  };
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
@@ -48,15 +57,25 @@ const ProductsOverviewScreen = (props) => {
           image={itemData.item.imageUrl}
           title={itemData.item.title}
           price={itemData.item.price}
-          onViewDetail={() => {
-            props.navigation.navigate("ProductDetail", {
-              productId: itemData.item.id,
-            });
+          onSelect={() => {
+            selectItemHandler(itemData.item.id, itemData.item.title);
           }}
-          onAddToCart={() => {
-            dispatch(cartActions.addToCart(itemData.item));
-          }}
-        />
+        >
+          <Button
+            color={Colors.primary}
+            title="View Details"
+            onPress={() => {
+              selectItemHandler(itemData.item.id, itemData.item.title);
+            }}
+          />
+          <Button
+            color={Colors.primary}
+            title="Add to Cart"
+            onPress={() => {
+              dispatch(cartActions.addToCart(itemData.item));
+            }}
+          />
+        </ProductItem>
       )}
     />
   );

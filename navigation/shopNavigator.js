@@ -13,6 +13,7 @@ import ProductDetailScreen from "../screens/shop/ProductDetailScreen";
 import CartScreen from "../screens/shop/CartScreen";
 import OrderScreen from "../screens/shop/OrderScreen";
 import UserProductScreen from "../screens/user/UserProductScreen";
+import EditProductScreen from "../screens/user/EditProductScreen";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -22,6 +23,70 @@ const defaultNavOptions = {
     backgroundColor: Platform.OS === "android" ? Colors.primary : "",
   },
   headerTintColor: Platform.OS === "android" ? "white" : Colors.primary,
+};
+
+const drawOptions = (navData) => {
+  return {
+    title: "Orders",
+    headerLeft: () => (
+      <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+        <Item
+          title="Menu"
+          iconName={Platform.OS === "android" ? "md-menu" : "ios-menu"}
+          onPress={() => {
+            navData.navigation.dispatch(DrawerActions.toggleDrawer());
+          }}
+        />
+      </HeaderButtons>
+    ),
+  };
+};
+
+const adminDrawOptions = (navData) => {
+  return {
+    title: "Orders",
+    headerLeft: () => (
+      <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+        <Item
+          title="Menu"
+          iconName={Platform.OS === "android" ? "md-menu" : "ios-menu"}
+          onPress={() => {
+            navData.navigation.dispatch(DrawerActions.toggleDrawer());
+          }}
+        />
+      </HeaderButtons>
+    ),
+    headerRight: () => (
+      <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+        <Item
+          title="Add"
+          iconName={Platform.OS === "android" ? "md-create" : "ios-create"}
+          onPress={() => {
+            navData.navigation.navigate("EditProduct");
+          }}
+        />
+      </HeaderButtons>
+    ),
+  };
+};
+
+const editHeaderOptions = (navData) => {
+  const submitFn = navData.route.params ? navData.route.params.submit : null;
+  const routeParams = navData.route.params ? navData.route.params : {};
+  return {
+    title: routeParams.productId ? "Edit Product" : "Add Product",
+    headerRight: () => (
+      <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+        <Item
+          title="Add"
+          iconName={
+            Platform.OS === "android" ? "md-checkmark" : "ios-checkamark"
+          }
+          onPress={submitFn}
+        />
+      </HeaderButtons>
+    ),
+  };
 };
 
 export const ProductsNavigator = (props) => {
@@ -51,20 +116,7 @@ export const OrdersNavigator = (props) => {
       <Stack.Screen
         name="Orders"
         component={OrderScreen}
-        options={{
-          title: "Orders",
-          headerLeft: (navData) => (
-            <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
-              <Item
-                title="Menu"
-                iconName={Platform.OS === "android" ? "md-menu" : "ios-menu"}
-                onPress={() => {
-                  props.navigation.dispatch(DrawerActions.toggleDrawer());
-                }}
-              />
-            </HeaderButtons>
-          ),
-        }}
+        options={drawOptions}
       />
     </Stack.Navigator>
   );
@@ -76,20 +128,12 @@ export const AdminNavigator = (props) => {
       <Stack.Screen
         name="UserProducts"
         component={UserProductScreen}
-        options={{
-          title: "User Products",
-          headerLeft: (navData) => (
-            <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
-              <Item
-                title="Menu"
-                iconName={Platform.OS === "android" ? "md-menu" : "ios-menu"}
-                onPress={() => {
-                  props.navigation.dispatch(DrawerActions.toggleDrawer());
-                }}
-              />
-            </HeaderButtons>
-          ),
-        }}
+        options={adminDrawOptions}
+      />
+      <Stack.Screen
+        name="EditProduct"
+        component={EditProductScreen}
+        options={editHeaderOptions}
       />
     </Stack.Navigator>
   );
