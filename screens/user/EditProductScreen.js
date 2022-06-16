@@ -1,12 +1,29 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, StyleSheet, TextInput, ScrollView } from "react-native";
-import { useSelector } from "react-redux";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useLayoutEffect,
+} from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  ScrollView,
+  Platform,
+} from "react-native";
+import { HeaderButtons, Item } from "react-navigation-header-buttons";
+import { useSelector, useDispatch } from "react-redux";
+import CustomHeaderButton from "../../components/ui/CustomHeaderButton";
+import * as productActions from "../../store/actions/products";
 
 const EditProductScreen = (props) => {
   const { productId } = props.route.params || "";
   const editedProduct = useSelector((state) =>
     state.products.userProducts.find((prod) => prod.id === productId)
   );
+
+  const dispatch = useDispatch();
 
   const [title, setTitle] = useState(editedProduct ? editedProduct.title : "");
   const [imageUrl, setImageUrl] = useState(
@@ -17,13 +34,35 @@ const EditProductScreen = (props) => {
     editedProduct ? editedProduct.description : ""
   );
 
-  const submitHandler = useCallback(() => {
-    console.log("Submitting");
+  useLayoutEffect(() => {
+    props.navigation.setOptions({
+      title: productId ? "Edit Product" : "Add Product",
+      headerRight: () => (
+        <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+          <Item
+            title="Add"
+            iconName={
+              Platform.OS === "android" ? "md-checkmark" : "ios-checkamark"
+            }
+            onPress={submitHandler}
+          />
+        </HeaderButtons>
+      ),
+    });
   });
+  const submitHandler = useCallback(() => {
+    if (editedProduct) {
+      dispatch(
+        productActions.updateProduct(productId, title, description, imageUrl)
+      );
+    } else {
+      //add + sign for number
+      dispatch(
+        productActions.createProduct(title, description, imageUrl, +price)
+      );
+    }
+  }, [dispatch, productId, title, description, imageUrl, price]);
 
-  useEffect(() => {
-    props.navigation.setParams({ submit: submitHandler });
-  }, []);
   return (
     <ScrollView>
       <View style={styles.form}>

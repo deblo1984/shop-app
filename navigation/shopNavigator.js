@@ -130,11 +130,7 @@ export const AdminNavigator = (props) => {
         component={UserProductScreen}
         options={adminDrawOptions}
       />
-      <Stack.Screen
-        name="EditProduct"
-        component={EditProductScreen}
-        options={editHeaderOptions}
-      />
+      <Stack.Screen name="EditProduct" component={EditProductScreen} />
     </Stack.Navigator>
   );
 };
