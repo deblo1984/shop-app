@@ -44,7 +44,7 @@ const drawOptions = (navData) => {
 
 const adminDrawOptions = (navData) => {
   return {
-    title: "Orders",
+    title: "Admin",
     headerLeft: () => (
       <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
         <Item

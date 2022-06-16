@@ -1,17 +1,26 @@
-import React, { useCallback, useLayoutEffect, useReducer } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useReducer,
+  useState,
+} from "react";
 import {
   View,
   StyleSheet,
   ScrollView,
   Platform,
   Alert,
+  Text,
   KeyboardAvoidingView,
+  ActivityIndicator,
 } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { useSelector, useDispatch } from "react-redux";
 import CustomHeaderButton from "../../components/ui/CustomHeaderButton";
 import * as productActions from "../../store/actions/products";
 import Input from "../../components/ui/Input";
+import Colors from "../../constants/Colors";
 
 const FORM_UPDATE = "UPDATE";
 
@@ -39,6 +48,9 @@ const formReducer = (state, action) => {
 };
 
 const EditProductScreen = (props) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
+
   const { productId } = props.route.params || "";
   const editedProduct = useSelector((state) =>
     state.products.userProducts.find((prod) => prod.id === productId)
@@ -51,7 +63,7 @@ const EditProductScreen = (props) => {
       title: editedProduct ? editedProduct.title : "",
       imageUrl: editedProduct ? editedProduct.imageUrl : "",
       description: editedProduct ? editedProduct.description : "",
-      price: "",
+      price: editedProduct ? editedProduct.price : "0",
     },
     inputValidities: {
       title: editedProduct ? true : false,
@@ -78,7 +90,14 @@ const EditProductScreen = (props) => {
       ),
     });
   });
-  const submitHandler = useCallback(() => {
+
+  useEffect(() => {
+    if (error) {
+      Alert.alert("an error occured", error, [{ text: "Ok" }]);
+    }
+  }, [error]);
+
+  const submitHandler = useCallback(async () => {
     //console.log(formState.formIsValid);
     if (!formState.formIsValid) {
       Alert.alert("Empty Field", "Please fill all the required field.", [
@@ -86,27 +105,36 @@ const EditProductScreen = (props) => {
       ]);
       return;
     }
-    if (editedProduct) {
-      dispatch(
-        productActions.updateProduct(
-          productId,
-          formState.inputValues.title,
-          formState.inputValues.description,
-          formState.inputValues.imageUrl
-        )
-      );
-    } else {
-      //add + sign for number
-      dispatch(
-        productActions.createProduct(
-          formState.inputValues.title,
-          formState.inputValues.description,
-          formState.inputValues.imageUrl,
-          +formState.inputValues.price
-        )
-      );
+    setError(null);
+    setIsLoading(true);
+    try {
+      if (editedProduct) {
+        await dispatch(
+          productActions.updateProduct(
+            productId,
+            formState.inputValues.title,
+            formState.inputValues.description,
+            formState.inputValues.imageUrl,
+            +formState.inputValues.price
+          )
+        );
+      } else {
+        //add + sign for number
+        await dispatch(
+          productActions.createProduct(
+            formState.inputValues.title,
+            formState.inputValues.description,
+            formState.inputValues.imageUrl,
+            +formState.inputValues.price
+          )
+        );
+      }
+      props.navigation.goBack();
+    } catch (err) {
+      setError(err.message);
     }
-    props.navigation.goBack();
+
+    setIsLoading(false);
   }, [dispatch, productId, formState]);
 
   const inputChangeHandler = useCallback(
@@ -121,12 +149,18 @@ const EditProductScreen = (props) => {
     [dispatchFormState]
   );
 
+  if (isLoading) {
+    <View style={styles.centered}>
+      <ActivityIndicator size="large" color={Colors.primary} />
+    </View>;
+  }
+
   return (
     <ScrollView>
       <View style={styles.form}>
         <Input
           id="title"
-          label="title"
+          label="Title"
           errorText="Title cannot be empty!"
           keyboardType="default"
           returnKeyType="next"
@@ -146,16 +180,17 @@ const EditProductScreen = (props) => {
           required
         />
 
-        {editedProduct ? null : (
-          <Input
-            id="price"
-            label="Price"
-            errorText="Price is required field"
-            keyboardType="decimal-pad"
-            onInputChange={inputChangeHandler}
-            required
-          />
-        )}
+        <Input
+          id="price"
+          label="Price"
+          errorText="Price is required field"
+          keyboardType="decimal-pad"
+          initialValue={editedProduct ? editedProduct.price.toString() : ""}
+          initiallyValid={!!editedProduct}
+          onInputChange={inputChangeHandler}
+          required
+        />
+
         <Input
           id="description"
           label="Description"
@@ -175,6 +210,11 @@ const EditProductScreen = (props) => {
 const styles = StyleSheet.create({
   form: {
     margin: 20,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
