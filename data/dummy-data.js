@@ -49,6 +49,14 @@ const PRODUCTS = [
     "Can be used for role-playing (not the kind of role-playing you're thinking about...).",
     5.49
   ),
+  new Product(
+    "p7",
+    "u1",
+    "Lingerie",
+    "https://images.tokopedia.net/img/cache/700/VqbcmM/2020/10/12/3778b4c2-31f9-4ac2-b956-cc6a326934ed.jpg",
+    "Can be used for role-playing (not the kind of role-playing you're thinking about...).",
+    5.49
+  ),
 ];
 
 export default PRODUCTS;
