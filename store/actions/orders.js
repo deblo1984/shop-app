@@ -4,11 +4,13 @@ export const ADD_ORDER = "ADD_ORDER";
 export const SET_ORDER = "SET_ORDER";
 
 export const addOrder = (cartItems, totalAmount) => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
+    const token = getState().auth.token;
+    const userId = getState().auth.userId;
     const date = new Date();
     try {
       const response = await fetch(
-        `https://mobile-shop-e2ab8-default-rtdb.asia-southeast1.firebasedatabase.app/orders/u1.json`,
+        `https://mobile-shop-e2ab8-default-rtdb.asia-southeast1.firebasedatabase.app/orders/${userId}.json?auth=${token}`,
         {
           method: "POST",
           headers: {
@@ -21,7 +23,7 @@ export const addOrder = (cartItems, totalAmount) => {
           }),
         }
       );
-      const resData = response.json();
+      const resData = await response.json();
 
       dispatch({
         type: ADD_ORDER,
@@ -39,10 +41,12 @@ export const addOrder = (cartItems, totalAmount) => {
 };
 
 export const fetchOrders = () => {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
+    const token = getState().auth.token;
+    const userId = getState().auth.userId;
     try {
       const response = await fetch(
-        "https://mobile-shop-e2ab8-default-rtdb.asia-southeast1.firebasedatabase.app/orders/u1.json"
+        `https://mobile-shop-e2ab8-default-rtdb.asia-southeast1.firebasedatabase.app/orders/${userId}.json?auth=${token}`
       );
 
       if (!response.ok) {

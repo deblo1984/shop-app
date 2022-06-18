@@ -1,19 +1,26 @@
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import { Platform } from "react-native";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import { Button, Platform, SafeAreaView, View } from "react-native";
+import {
+  createDrawerNavigator,
+  DrawerItemList,
+} from "@react-navigation/drawer";
 import { Ionicons } from "@expo/vector-icons";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { DrawerActions } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
 
 import CustomHeaderButton from "../components/ui/CustomHeaderButton";
 import Colors from "../constants/Colors";
+import * as authAction from "../store/actions/auth";
 import ProductsOverviewScreen from "../screens/shop/ProductsOverviewScreen";
 import ProductDetailScreen from "../screens/shop/ProductDetailScreen";
 import CartScreen from "../screens/shop/CartScreen";
 import OrderScreen from "../screens/shop/OrderScreen";
 import UserProductScreen from "../screens/user/UserProductScreen";
 import EditProductScreen from "../screens/user/EditProductScreen";
+import AuthScreen from "../screens/user/AuthScreen";
+import StartupScreen from "../screens/StartupScreen";
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -136,8 +143,28 @@ export const AdminNavigator = (props) => {
 };
 
 export const DrawerNavigator = (props) => {
+  const dispatch = useDispatch();
   return (
-    <Drawer.Navigator drawerContentOptions={{ activeTintColor: Colors.accent }}>
+    <Drawer.Navigator
+      drawerContentOptions={{ activeTintColor: Colors.accent }}
+      drawerContent={(props) => {
+        return (
+          <View style={{ flex: 1, paddingTop: 20 }}>
+            <SafeAreaView forceInset={{ top: "always", horizontal: "never" }}>
+              <DrawerItemList {...props} />
+              <Button
+                title="Logout"
+                color={Colors.primary}
+                onPress={() => {
+                  dispatch(authAction.logout());
+                  props.navigation.navigate("Auth");
+                }}
+              />
+            </SafeAreaView>
+          </View>
+        );
+      }}
+    >
       <Drawer.Screen
         name="Products"
         component={ProductsNavigator}
@@ -178,5 +205,23 @@ export const DrawerNavigator = (props) => {
         }}
       />
     </Drawer.Navigator>
+  );
+};
+
+export const AuthNavigator = (props) => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="UserAuth" component={AuthScreen} />
+    </Stack.Navigator>
+  );
+};
+
+export const MainNavigator = (props) => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Startup" component={StartupScreen} />
+      <Stack.Screen name="Auth" component={AuthScreen} />
+      <Stack.Screen name="Home" component={DrawerNavigator} />
+    </Stack.Navigator>
   );
 };

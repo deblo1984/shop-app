@@ -35,9 +35,9 @@ const CartScreen = () => {
     );
   });
 
-  const createOrderHandler = async () => {
+  const createOrderHandler = () => {
     setIsLoading(true);
-    await dispatch(ordersAction.addOrder(cartItems, cartTotalAmount));
+    dispatch(ordersAction.addOrder(cartItems, cartTotalAmount));
     setIsLoading(false);
   };
 
