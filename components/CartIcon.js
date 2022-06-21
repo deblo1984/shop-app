@@ -15,7 +15,7 @@ const CartIcon = (props) => {
       sum: props.cart.items[key].sum,
     });
   }
-  console.log(cartItems);
+  //console.log(cartItems);
   return (
     <>
       {cartItems.length > 0 ? (
