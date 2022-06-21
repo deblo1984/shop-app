@@ -23,6 +23,7 @@ import ProductItem from "../../components/shop/ProductItem";
 import * as cartActions from "../../store/actions/cart";
 import CustomHeaderButton from "../../components/ui/CustomHeaderButton";
 import * as productsAction from "../../store/actions/products";
+import CartIcon from "../../components/CartIcon";
 
 const ProductsOverviewScreen = (props) => {
   const [isLoading, setIsloading] = useState(false);
@@ -69,24 +70,29 @@ const ProductsOverviewScreen = (props) => {
       title: "Products",
       headerLeft: (navData) => (
         <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
-          <Item
-            title="Menu"
-            iconName={Platform.OS === "android" ? "md-menu" : "ios-menu"}
-            onPress={() => {
-              props.navigation.dispatch(DrawerActions.toggleDrawer());
-            }}
-          />
+          <View>
+            <Item
+              title="Menu"
+              iconName={Platform.OS === "android" ? "md-menu" : "ios-menu"}
+              onPress={() => {
+                props.navigation.dispatch(DrawerActions.toggleDrawer());
+              }}
+            />
+          </View>
         </HeaderButtons>
       ),
       headerRight: () => (
         <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
-          <Item
-            title="Cart"
-            iconName={Platform.OS === "android" ? "md-cart" : "ios-cart"}
-            onPress={() => {
-              props.navigation.navigate("Cart");
-            }}
-          />
+          <View>
+            <Item
+              title="Cart"
+              iconName={Platform.OS === "android" ? "md-cart" : "ios-cart"}
+              onPress={() => {
+                props.navigation.navigate("Cart");
+              }}
+            />
+            <CartIcon />
+          </View>
         </HeaderButtons>
       ),
     });
